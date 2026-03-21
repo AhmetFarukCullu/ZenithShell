@@ -19,8 +19,32 @@ for /f "tokens=*" %%a in ('powershell -command "(Get-PSDrive C).Free"') do set "
 
 :menu
 cls
-title Windows Bakim Paneli v13.0 (Hibrit Analiz)
+title ZenithShell v14.0 (Proactive Monitoring)
 color %tema_kod%
+
+:: --- CANLI SICAKLIK ANALIZI ---
+set "cpu_status=OK"
+set "temp_color= "
+for /f "tokens=*" %%i in ('powershell -ExecutionPolicy Bypass -File "%~dp0Get-Temperature.ps1"') do set "cpu_temp=%%i"
+
+:: Kritik Seviye Kontrolü (85 Derece)
+if not "%cpu_temp%"=="N/A" (
+    # Batch ondalık sayı sevmez, sadece tam kısmına bakalım
+    for /f "delims=." %%a in ("%cpu_temp%") do set "temp_int=%%a"
+    if !temp_int! GEQ 85 (
+        set "cpu_status=!!! KRITIK UYARI: YUKSEK SICAKLIK !!!"
+        color 0c
+    )
+)
+
+echo ======================================================
+echo           ZENITHSHELL SISTEM KOMUTA MERKEZI
+echo ======================================================
+echo.
+echo  CPU Sicakligi: [%cpu_temp% °C]  Durum: [%cpu_status%]
+echo.
+echo  [1] Hizli Temizlik          [6] Haftalik Bakim Kur
+:: ... (Diğer menü öğeleri aynen kalıyor)
 
 :: --- DURUM KONTROLLERİ ---
 set "haftalik_durum=DEVRE DISI"
