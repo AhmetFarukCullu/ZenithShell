@@ -23,17 +23,23 @@ title ZenithShell v14.0 (Proactive Monitoring)
 color %tema_kod%
 
 :: --- CANLI SICAKLIK ANALIZI ---
+set "cpu_temp=N/A"
 set "cpu_status=OK"
-set "temp_color= "
-for /f "tokens=*" %%i in ('powershell -ExecutionPolicy Bypass -File "%~dp0Get-Temperature.ps1"') do set "cpu_temp=%%i"
 
-:: Kritik Seviye Kontrolü (85 Derece)
-if not "%cpu_temp%"=="N/A" (
-    # Batch ondalık sayı sevmez, sadece tam kısmına bakalım
+:: Klasörde DLL dosyası var mı kontrol et.
+if exist "%~dp0LibreHardwareMonitorLib.dll" (
+    :: PowerShell scriptini çalıştır ve gelen sonucu 'cpu_temp' değişkenine ata.
+    for /f "tokens=*" %%i in ('powershell -ExecutionPolicy Bypass -File "%~dp0Get-Temperature.ps1"') do set "cpu_temp=%%i"
+) else (
+    set "cpu_temp=DLL EKSIK"
+)
+
+:: Eğer sıcaklık rakam ise kritik seviyeyi (85) kontrol et.
+if not "%cpu_temp%"=="N/A" if not "%cpu_temp%"=="DLL EKSIK" if not "%cpu_temp%"=="DLL_YOK" (
+    :: Sayının tam kısmını al (Noktadan öncesi).
     for /f "delims=." %%a in ("%cpu_temp%") do set "temp_int=%%a"
     if !temp_int! GEQ 85 (
-        set "cpu_status=!!! KRITIK UYARI: YUKSEK SICAKLIK !!!"
-        color 0c
+        set "cpu_status=!!! KRITIK SICAKLIK !!!"
     )
 )
 
