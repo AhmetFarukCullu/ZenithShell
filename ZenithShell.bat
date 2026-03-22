@@ -40,17 +40,18 @@ echo ======================================================
 echo.
 echo  DISK SAGLIGI (S.M.A.R.T): [%smart_durum%]
 echo.
-echo  [1] Hizli Temizlik                [6] Haftalik Bakim Kur
-echo  [2] Derin Temizlik (Yedekli)      [7] Haftalik Bakim Iptal
-echo  [3] Interneti Tazele              [H] Hosts Kalkanı (Reklam/Zararlı Engelle)
-echo  [4] Copu Bosalt                   [9] Acilista Calistir (Iptal)
-echo  [5] Akilli Analiz ve Bakim        [A] AYAR: Oto-Kapat [%kapat_etiket%]
-echo  [T] Tarayici Temizligi            [C] TEMA: [%tema_ad%]
-echo  [R] RAM Onbellegi Bosalt          [D] Disk Saglik Raporu (Detayli)
-echo  [L] Bakim Gunlugunu Ac            [8] Acilista Calistir (Kur)
-echo  [0] Cikis                         [W] Wi-Fi ^& Ağ Analizi (Anlık)
-echo  [P] Acik Port Taramasi (Guvenlik) [B] Baslangic Analizi (Hizlandirma)
-echo  [V] Servis Optimizasyonu (Hiz)    [U] Tum Uygulamalari Guncelle (Winget)
+echo  [1] Hizli Temizlik                   [6] Haftalik Bakim Kur
+echo  [2] Derin Temizlik (Yedekli)         [7] Haftalik Bakim Iptal
+echo  [3] Interneti Tazele                 [H] Hosts Kalkanı (Reklam/Zararlı Engelle)
+echo  [4] Copu Bosalt                      [9] Acilista Calistir (Iptal)
+echo  [5] Akilli Analiz ve Bakim           [A] AYAR: Oto-Kapat [%kapat_etiket%]
+echo  [T] Tarayici Temizligi               [C] TEMA: [%tema_ad%]
+echo  [R] RAM Onbellegi Bosalt             [D] Disk Saglik Raporu (Detayli)
+echo  [L] Bakim Gunlugunu Ac               [8] Acilista Calistir (Kur)
+echo  [0] Cikis                            [W] Wi-Fi ^& Ağ Analizi (Anlık)
+echo  [P] Acik Port Taramasi (Guvenlik)    [B] Baslangic Analizi (Hizlandirma)
+echo  [V] Servis Optimizasyonu (Hiz)       [U] Tum Uygulamalari Guncelle (Winget)
+echo  [K] Elite Paket Kur (Format Sonrasi) 
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -73,6 +74,7 @@ if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="P" goto :port_taramasi
 if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
+if /i "%secim%"=="K" goto :toplu_kurulum
 if /i "%secim%"=="H" goto :hosts_kalkan
 if /i "%secim%"=="D" goto :disk_detay
 if /i "%secim%"=="C" goto :tema_degistir
@@ -479,6 +481,64 @@ if "%u_secim%"=="1" (
     winget upgrade --all --include-unknown
     echo.
     echo [+] Islem tamamlandi!
+    pause
+)
+
+goto :menu
+
+
+
+:toplu_kurulum
+cls
+echo ======================================================
+echo           ZENITHSHELL ELITE PAKET KURULUMU
+echo ======================================================
+echo.
+echo [!] Bu paket su uygulamalari icerir:
+echo     - Google Chrome (Tarayici)
+echo     - VLC Media Player (Video)
+echo     - 7-Zip (Arsivleme)
+echo     - Spotify (Muzik)
+echo     - Discord (Iletisim)
+echo     - Visual Studio Code (Yazilim)
+echo.
+echo [1] KURULUMU BASLAT (Sessiz ve Otomatik)
+echo [0] Vazgec ve Ana Menuye Don
+echo.
+set /p "k_secim=Seciminiz: "
+
+if "%k_secim%"=="1" (
+    echo.
+    echo [!] Paketler indiriliyor ve kuruluyor...
+    echo [!] Lutfen bekleyin, bu islem internet hiziniza baglidir.
+    echo.
+    
+    :: Google Chrome
+    echo [+] Chrome kuruluyor...
+    winget install --id Google.Chrome --silent --accept-package-agreements --accept-source-agreements >nul
+    
+    :: VLC
+    echo [+] VLC kuruluyor...
+    winget install --id VideoLAN.VLC --silent >nul
+    
+    :: 7-Zip
+    echo [+] 7-Zip kuruluyor...
+    winget install --id 7zip.7zip --silent >nul
+    
+    :: Spotify
+    echo [+] Spotify kuruluyor...
+    winget install --id Spotify.Spotify --silent >nul
+    
+    :: Discord
+    echo [+] Discord kuruluyor...
+    winget install --id Discord.Discord --silent >nul
+
+    :: VS Code
+    echo [+] VS Code kuruluyor...
+    winget install --id Microsoft.VisualStudioCode --silent >nul
+
+    echo.
+    echo [+] ELITE PAKET KURULUMU TAMAMLANDI!
     pause
 )
 
