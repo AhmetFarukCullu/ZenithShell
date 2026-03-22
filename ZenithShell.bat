@@ -299,35 +299,40 @@ goto :menu
 :wifi_analiz
 cls
 echo ======================================================
-echo           ZENITHSHELL WI-FI ^& AG ANALIZORU
+echo           ZENITHSHELL AG DURUM ANALIZORU
 echo ======================================================
 echo.
-echo [!] Ag bilgileri toplaniyor...
+echo [!] Ag arayuzleri kontrol ediliyor...
 echo.
 
-:: Dil bağımsız çekim (İndis numarasına göre veri alma)
-for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces ^| findstr /r "SSID" ^| findstr /v "BSSID"') do set "wifi_name=%%a"
-for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces ^| findstr /r "[0-9]%%"') do set "wifi_signal=%%a"
+:: Varsayılan değerler
+set "wifi_name=Bilinmiyor/Kablolu"
+set "wifi_signal=N/A"
+set "ping_res=Olculemedi"
 
-:: Eğer boş kaldıysa (Masaüstü/Ethernet kontrolü)
-if "%wifi_name%"=="" set "wifi_name= Bagli degil veya Ethernet"
-if "%wifi_signal%"=="" set "wifi_signal= Yok"
+:: Wi-Fi bilgilerini çekmeyi dene (Hata alsa bile devam et)
+for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces 2^>nul ^| findstr /r "SSID" ^| findstr /v "BSSID"') do set "wifi_name=%%a"
+for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces 2^>nul ^| findstr /r "[0-9]%%"') do set "wifi_signal=%%a"
 
-echo  Bagli Ag    :%wifi_name%
-echo  Sinyal Gucu :%wifi_signal%
+echo  Baglanti Tipi : %wifi_name%
+echo  Sinyal Gucu   : %wifi_signal%
 echo  --------------------------------------------------
-echo [!] Ping testi baslatiliyor (8.8.8.8)...
+echo [!] Gecikme testi yapiliyor (8.8.8.8)...
 echo.
 
-:: Ping testini dile takılmadan, sadece sayıları alacak şekilde yapıyoruz
-for /f "tokens=4 delims==" %%i in ('ping -n 4 8.8.8.8 ^| findstr /i "ms"') do set "ping_res=%%i"
-
-if "%ping_res%"=="" (
-    echo [!] Internet baglantisi YOK!
-) else (
-    echo  Gecikme (Ping): %ping_res%
+:: Ping Testi (Çökme korumalı manuel ayıklama)
+:: 8.8.8.8 adresine 2 paket gönderip sadece ortalamayı yakalarız
+for /f "tokens=2 delims==" %%i in ('ping -n 2 8.8.8.8 ^| findstr /i "ms"') do (
+    set "raw_ping=%%i"
+    set "ping_res=!raw_ping!"
 )
 
+:: Eğer hala boşsa (Dile takıldıysa), alternatif bir yöntemle sadece sayıyı çek
+if "%ping_res%"=="Olculemedi" (
+    for /f "tokens=4 delims== " %%i in ('ping -n 2 8.8.8.8 ^| findstr /i "ms"') do set "ping_res=%%i"
+)
+
+echo  Ortalama Gecikme (Ping): %ping_res%
 echo  --------------------------------------------------
 echo.
 echo Ana menuye donmek icin bir tusa basin.
