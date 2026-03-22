@@ -1,6 +1,7 @@
 @echo off
 setlocal enabledelayedexpansion
 
+
 :: --- YONETICI YETKISI KONTROLU ---
 net session >nul 2>&1
 if %errorLevel% neq 0 (
@@ -21,10 +22,47 @@ for /f "tokens=*" %%a in ('powershell -command "(Get-PSDrive C).Free"') do set "
 for /f "tokens=2 delims==" %%a in ('wmic diskdrive get status /value ^| find "Status"') do set "smart_durum=%%a"
 if "%smart_durum%"=="" set "smart_durum=BILINMIYOR"
 
+
+:: --- DEGISKEN ILKLEME (COKME KORUMASI) ---
+set "wifi_name=Bilinmiyor"
+set "disk_yuzde=0"
+set "disk_bos=0"
+set "smart_durum=Kontrol Ediliyor..."
+
 :menu
 cls
-title Windows Bakim Paneli v13.0 (Hibrit Analiz)
+title ZenithShell Bakim Paneli v13.0 (Hibrit Analiz)
 color %tema_kod%
+
+:: --- AG VE DISK VERILERINI TAZELE ---
+:: Wi-Fi adını çek (Hızlı sorgu)
+for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces 2^>nul ^| findstr /r "SSID" ^| findstr /v "BSSID"') do set "wifi_name=%%a"
+
+:: Disk boş alanını GB cinsinden yaklaşık çek
+for /f "tokens=*" %%a in ('powershell -command "[math]::round((Get-PSDrive C).Free / 1GB, 1)"') do set "disk_bos=%%a"
+
+:: --- DASHBOARD VERI MOTORU ---
+set "used_mem_perc=0"
+set "ram_bar=----------"
+set "f_mem=0"
+set "t_mem=0"
+
+:: RAM Verilerini Çek
+for /f "tokens=2 delims==" %%a in ('wmic OS get FreePhysicalMemory /value 2^>nul') do set "f_mem=%%a"
+for /f "tokens=2 delims==" %%a in ('wmic OS get TotalVisibleMemorySize /value 2^>nul') do set "t_mem=%%a"
+
+:: Matematiksel hesaplama
+if not "%f_mem%"=="0" (
+    set /a "used_mem_perc=100 - (f_mem * 100 / t_mem)"
+    set /a "bar_index=!used_mem_perc! / 10"
+    
+    set "bar_fill=##########"
+    set "bar_empty=----------"
+    
+    for /f "delims=" %%i in ("!bar_index!") do (
+        set "ram_bar=!bar_fill:~0,%%i!!bar_empty:~%%i,10!"
+    )
+)
 
 :: --- DURUM KONTROLLERİ ---
 set "haftalik_durum=DEVRE DISI"
@@ -33,6 +71,17 @@ set "acilis_durum=DEVRE DISI"
 schtasks /query /tn "SistemBakim_Acilis" >nul 2>&1 && set "acilis_durum=AKTIF"
 set "kapat_etiket=KAPALI"
 if "!oto_kapat!"=="1" set "kapat_etiket=ACIK"
+
+:: --- GÖRSEL ÇIKTI ---
+echo ======================================================
+echo           ZENITHSHELL DASHBOARD [V25.3]
+echo ======================================================
+echo  BELLEK KULLANIMI : [!ram_bar!] !used_mem_perc!%%
+echo  DISK BOS ALAN    : [ !disk_bos! GB ]
+echo  S.M.A.R.T DURUMU : [%smart_durum%]
+echo  AG BAGLANTISI    : %wifi_name%
+echo ======================================================
+echo.
 
 echo ======================================================
 echo         ZENITHSHELL SISTEM VE ANALIZ MERKEZI
