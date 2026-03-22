@@ -48,7 +48,7 @@ echo  [5] Akilli Analiz ve Bakim  [A] AYAR: Oto-Kapat [%kapat_etiket%]
 echo  [T] Tarayici Temizligi      [C] TEMA: [%tema_ad%]
 echo  [R] RAM Onbellegi Bosalt    [D] Disk Saglik Raporu (Detayli)
 echo  [L] Bakim Gunlugunu Ac      [8] Acilista Calistir (Kur)
-echo  [0] Cikis
+echo  [0] Cikis                   [W] Wi-Fi ^& Ağ Analizi (Anlık)
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -64,6 +64,7 @@ if "%secim%"=="6" goto :zamanla_ozel
 if "%secim%"=="7" goto :zamanla_sil
 if "%secim%"=="8" goto :acilis_aktif
 if "%secim%"=="9" goto :acilis_iptal
+if /i "%secim%"=="W" goto :wifi_analiz
 if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
@@ -290,4 +291,36 @@ ipconfig /flushdns >nul
 echo [!] Degisikliklerin aktif olmasi icin DNS temizlendi.
 echo.
 pause
+goto :menu
+
+
+
+
+:wifi_analiz
+cls
+echo ======================================================
+echo           ZENITHSHELL WI-FI ^& AG ANALIZORU
+echo ======================================================
+echo.
+echo [!] Ag bilgileri toplaniyor...
+echo.
+
+:: Wi-Fi Sinyal Gücü ve Detayları Yakala
+for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces ^| findstr "SSID" ^| findstr /v "BSSID"') do set "wifi_name=%%a"
+for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces ^| findstr "Sinyal"') do set "wifi_signal=%%a"
+
+echo  Bagli Ag    : %wifi_name%
+echo  Sinyal Gucu : %wifi_signal%
+echo  --------------------------------------------------
+echo [!] Ping testi baslatiliyor (google.com)...
+echo.
+
+:: Ping Testi (Gecikme Süresi)
+ping -n 4 google.com | findstr "Ortalama"
+if %errorlevel% neq 0 echo [!] Internet baglantisi kurulamadi!
+
+echo  --------------------------------------------------
+echo.
+echo Ana menuye donmek icin bir tusa basin.
+pause >nul
 goto :menu
