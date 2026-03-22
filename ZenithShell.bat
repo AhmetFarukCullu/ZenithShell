@@ -180,6 +180,8 @@ del /s /f /q "%temp%\*.*" >nul 2>&1
 wevtutil cl Setup >nul 2>&1
 wevtutil cl System >nul 2>&1
 wevtutil cl Application >nul 2>&1
+:: Temizlik bittiginde sesli bildirim verir
+call :seslendir "Sistem temizligi tamamlandi. Zenith Shell, bilgisayarinizi ferahlatti."
 call :progress 100 "Islem Tamam!"
 goto :rapor_hazirla
 
@@ -543,3 +545,10 @@ if "%k_secim%"=="1" (
 )
 
 goto :menu
+
+
+
+:seslendir
+:: Kullanım: call :seslendir "Mesajınız buraya"
+powershell -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('%~1');"
+exit /b
