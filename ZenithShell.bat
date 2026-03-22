@@ -306,11 +306,11 @@ echo [!] Ag arayuzleri kontrol ediliyor...
 echo.
 
 :: Varsayılan değerler
-set "wifi_name=Bilinmiyor/Kablolu"
-set "wifi_signal=N/A"
+set "wifi_name=Ethernet (Kablolu)"
+set "wifi_signal=---"
 set "ping_res=Olculemedi"
 
-:: Wi-Fi bilgilerini çekmeyi dene (Hata alsa bile devam et)
+:: Wi-Fi bilgilerini çekmeyi dene
 for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces 2^>nul ^| findstr /r "SSID" ^| findstr /v "BSSID"') do set "wifi_name=%%a"
 for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces 2^>nul ^| findstr /r "[0-9]%%"') do set "wifi_signal=%%a"
 
@@ -320,19 +320,17 @@ echo  --------------------------------------------------
 echo [!] Gecikme testi yapiliyor (8.8.8.8)...
 echo.
 
-:: Ping Testi (Çökme korumalı manuel ayıklama)
-:: 8.8.8.8 adresine 2 paket gönderip sadece ortalamayı yakalarız
-for /f "tokens=2 delims==" %%i in ('ping -n 2 8.8.8.8 ^| findstr /i "ms"') do (
-    set "raw_ping=%%i"
-    set "ping_res=!raw_ping!"
+:: Sadece 'Ortalama = Xms' kısmındaki 'Xms' değerini tertemiz alalım
+for /f "tokens=3 delims=, " %%i in ('ping -n 2 8.8.8.8 ^| findstr /i "ms"') do (
+    for /f "tokens=2 delims==" %%j in ("%%i") do set "ping_res=%%j"
 )
 
-:: Eğer hala boşsa (Dile takıldıysa), alternatif bir yöntemle sadece sayıyı çek
+:: Eğer yukarıdaki yöntem dile takılırsa, sadece sayıyı ve birimi yakala
 if "%ping_res%"=="Olculemedi" (
     for /f "tokens=4 delims== " %%i in ('ping -n 2 8.8.8.8 ^| findstr /i "ms"') do set "ping_res=%%i"
 )
 
-echo  Ortalama Gecikme (Ping): %ping_res%
+echo  Ortalama Gecikme : %ping_res%
 echo  --------------------------------------------------
 echo.
 echo Ana menuye donmek icin bir tusa basin.
