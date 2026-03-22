@@ -1,0 +1,10 @@
+# Log dosyalarını yoksay
+bakim_gunlugu.txt
+*.log
+
+# Geçici dosyalar
+*.tmp
+temp/
+
+# Donanım kütüphanesi kalıntıları (varsa)
+LibreHardwareMonitorLib.dll
