@@ -19,38 +19,22 @@ for /f "tokens=*" %%a in ('powershell -command "(Get-PSDrive C).Free"') do set "
 
 :menu
 cls
-title ZenithShell v14.0 (Proactive Monitoring)
+title ZenithShell v14.0 - Kararli Surum
 color %tema_kod%
-
-:: --- CANLI SICAKLIK ANALIZI ---
-set "cpu_temp=N/A"
-set "cpu_status=OK"
-
-:: Klasörde DLL dosyası var mı kontrol et.
-if exist "%~dp0LibreHardwareMonitorLib.dll" (
-    :: PowerShell scriptini çalıştır ve gelen sonucu 'cpu_temp' değişkenine ata.
-    for /f "tokens=*" %%i in ('powershell -ExecutionPolicy Bypass -File "%~dp0Get-Temperature.ps1"') do set "cpu_temp=%%i"
-) else (
-    set "cpu_temp=DLL EKSIK"
-)
-
-:: Eğer sıcaklık rakam ise kritik seviyeyi (85) kontrol et.
-if not "%cpu_temp%"=="N/A" if not "%cpu_temp%"=="DLL EKSIK" if not "%cpu_temp%"=="DLL_YOK" (
-    :: Sayının tam kısmını al (Noktadan öncesi).
-    for /f "delims=." %%a in ("%cpu_temp%") do set "temp_int=%%a"
-    if !temp_int! GEQ 85 (
-        set "cpu_status=!!! KRITIK SICAKLIK !!!"
-    )
-)
 
 echo ======================================================
 echo           ZENITHSHELL SISTEM KOMUTA MERKEZI
 echo ======================================================
 echo.
-echo  CPU Sicakligi: [%cpu_temp% °C]  Durum: [%cpu_status%]
+echo  Sistem Durumu: [AKTIF]
 echo.
 echo  [1] Hizli Temizlik          [6] Haftalik Bakim Kur
-:: ... (Diğer menü öğeleri aynen kalıyor)
+echo  [2] Derin Optimizasyon      [7] Tema Degistir
+echo  [3] Disk Analizi            [8] Hakkinda
+echo  [4] Internet Hizlandir       [9] Cikis
+echo.
+echo ======================================================
+set /p secim="Islem Seciniz: "
 
 :: --- DURUM KONTROLLERİ ---
 set "haftalik_durum=DEVRE DISI"
