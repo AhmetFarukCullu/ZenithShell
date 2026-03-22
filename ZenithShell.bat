@@ -131,6 +131,7 @@ echo  [P] Acik Port Taramasi (Guvenlik)    [B] Baslangic Analizi (Hizlandirma)
 echo  [V] Servis Optimizasyonu (Hiz)       [U] Tum Uygulamalari Guncelle (Winget)
 echo  [K] Elite Paket Kur (Format Sonrasi) [I] Donanim Envanter Raporu (Cikti Al)
 echo  [M] Mavi Ekran (BSOD) Analizi        [O] Windows Update Onarici
+echo  [G] Pil Sagligi ^& Guc Raporu
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -158,6 +159,7 @@ if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
 if /i "%secim%"=="K" goto :toplu_kurulum
 if /i "%secim%"=="I" goto :envanter_raporu
 if /i "%secim%"=="H" goto :hosts_kalkan
+if /i "%secim%"=="G" goto :pil_analiz
 if /i "%secim%"=="D" goto :disk_detay
 if /i "%secim%"=="C" goto :tema_degistir
 if /i "%secim%"=="B" goto :baslangic_analiz
@@ -757,4 +759,41 @@ echo ======================================================
 echo.
 call :seslendir "Windows guncelleme servisleri onarildi. Yeniden baslatma onerilir."
 pause
+goto :menu
+
+
+
+:pil_analiz
+cls
+echo ======================================================
+echo           ZENITHSHELL PIL SAGLIGI ANALIZI
+echo ======================================================
+echo.
+echo [!] Pil verileri toplaniyor, lutfen bekleyin...
+echo.
+
+:: Masaüstüne geçici bir HTML raporu oluştur (Windows standardı)
+powercfg /batteryreport /output "%temp%\battery_report.html" >nul 2>&1
+
+:: PowerShell ile verileri çek ve hesapla
+powershell -Command ^
+    "$report = Get-Content '%temp%\battery_report.html'; ^
+    $design = [regex]::Match($report, 'DESIGN CAPACITY.*?([\d,]+) mWh').Groups[1].Value.Replace(',',''); ^
+    $full = [regex]::Match($report, 'FULL CHARGE CAPACITY.*?([\d,]+) mWh').Groups[1].Value.Replace(',',''); ^
+    if (!$design -or !$full) { Write-Host '[X] HATA: Pil bulunamadi veya sistem masaustu (Desktop).'; return }; ^
+    $health = [math]::Round(($full / $design) * 100, 2); ^
+    Write-Host '--------------------------------------------'; ^
+    Write-Host '[+] Fabrika Kapasitesi : ' $design ' mWh'; ^
+    Write-Host '[+] Mevcut Kapasite    : ' $full ' mWh'; ^
+    Write-Host '--------------------------------------------'; ^
+    if ($health -ge 80) { Write-Host '[DURUM]: MUKEMMEL (%' $health ')' -ForegroundColor Green } ^
+    elseif ($health -ge 50) { Write-Host '[DURUM]: ORTA (%' $health ')' -ForegroundColor Yellow } ^
+    else { Write-Host '[DURUM]: KRITIK - DEGISTIRILMELI (%' $health ')' -ForegroundColor Red }"
+
+echo.
+echo [1] Detayli Pil Raporunu Ac (HTML)
+echo [0] Ana Menuye Don
+echo.
+set /p "p_secim=Seciminiz: "
+if "%p_secim%"=="1" start "" "%temp%\battery_report.html"
 goto :menu
