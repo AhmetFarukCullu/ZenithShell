@@ -156,7 +156,7 @@ echo  [V] Servis Optimizasyonu (Hiz)       [U] Tum Uygulamalari Guncelle (Winget
 echo  [K] Elite Paket Kur (Format Sonrasi) [I] Donanim Envanter Raporu (Cikti Al)
 echo  [M] Mavi Ekran (BSOD) Analizi        [O] Windows Update Onarici
 echo  [G] Pil Sagligi ^& Guc Raporu         [S] Anti-Ransomware Shield (Zirh)
-echo  [Y] Yardim
+echo  [Y] Yardim                           [E] Otomatik Surucu Guncelle (Driver)
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -187,6 +187,7 @@ if /i "%secim%"=="K" goto :toplu_kurulum
 if /i "%secim%"=="I" goto :envanter_raporu
 if /i "%secim%"=="H" goto :hosts_kalkan
 if /i "%secim%"=="G" goto :pil_analiz
+if /i "%secim%"=="E" goto :driver_update
 if /i "%secim%"=="D" goto :disk_detay
 if /i "%secim%"=="C" goto :tema_degistir
 if /i "%secim%"=="B" goto :baslangic_analiz
@@ -902,5 +903,54 @@ echo    kisisel dosyalariniza dokunmaz.
 echo 3. Update Onarici: Servisleri durdurup baslatir, bu sirada
 echo    Windows Update ekranini kapatmaniz onerilir.
 echo.
+pause
+goto :menu
+
+
+
+:driver_update
+cls
+echo ======================================================
+echo           ZENITHSHELL OTOMATIK SURUCU GUNCELLEME
+echo ======================================================
+echo.
+echo [!] Sistem surucu veri tabani ile eslesiyor...
+echo [!] Lutfen bekleyin, bu islem 1-3 dakika surebilir.
+echo.
+
+set "drv_ps=%temp%\zshell_driver.ps1"
+
+:: Geçici PowerShell Scriptini Oluştur (Hata yapmaması için her satır ayrı)
+echo $Searcher = New-Object -ComObject Microsoft.Update.Searcher > "%drv_ps%"
+echo $SearchResult = $Searcher.Search("IsInstalled=0 and Type='Driver'") >> "%drv_ps%"
+echo if ($SearchResult.Updates.Count -eq 0) { >> "%drv_ps%"
+echo     Write-Host '[OK] Tum suruculeriniz guncel.' -ForegroundColor Green >> "%drv_ps%"
+echo } else { >> "%drv_ps%"
+echo     Write-Host "[!] $($SearchResult.Updates.Count) adet guncelleme bulundu!" -ForegroundColor Yellow >> "%drv_ps%"
+echo     foreach ($Update in $SearchResult.Updates) { >> "%drv_ps%"
+echo         Write-Host "[+] Yukleniyor: $($Update.Title)" -ForegroundColor Cyan >> "%drv_ps%"
+echo         $Downloader = New-Object -ComObject Microsoft.Update.Downloader >> "%drv_ps%"
+echo         $Downloader.Updates = New-Object -ComObject Microsoft.Update.UpdateColl >> "%drv_ps%"
+echo         $Downloader.Updates.Add($Update) ^| Out-Null >> "%drv_ps%"
+echo         $Downloader.Download() ^| Out-Null >> "%drv_ps%"
+echo         $Installer = New-Object -ComObject Microsoft.Update.Installer >> "%drv_ps%"
+echo         $Installer.Updates = New-Object -ComObject Microsoft.Update.UpdateColl >> "%drv_ps%"
+echo         $Installer.Updates.Add($Update) ^| Out-Null >> "%drv_ps%"
+echo         $Result = $Installer.Install() >> "%drv_ps%"
+echo     } >> "%drv_ps%"
+echo } >> "%drv_ps%"
+
+:: Scripti Bypass Modunda Çalıştır
+powershell -ExecutionPolicy Bypass -File "%drv_ps%"
+
+:: Temizlik
+if exist "%drv_ps%" del "%drv_ps%"
+
+echo.
+echo ======================================================
+echo  [OK] ISLEM TAMAMLANDI!
+echo ======================================================
+echo.
+call :seslendir "Surucu taramasi bitti."
 pause
 goto :menu
