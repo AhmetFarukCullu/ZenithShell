@@ -49,7 +49,7 @@ echo  [T] Tarayici Temizligi            [C] TEMA: [%tema_ad%]
 echo  [R] RAM Onbellegi Bosalt          [D] Disk Saglik Raporu (Detayli)
 echo  [L] Bakim Gunlugunu Ac            [8] Acilista Calistir (Kur)
 echo  [0] Cikis                         [W] Wi-Fi ^& Ağ Analizi (Anlık)
-echo  [P] Acik Port Taramasi (Guvenlik)
+echo  [P] Acik Port Taramasi (Guvenlik) [B] Baslangic Analizi (Hizlandirma)
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -73,6 +73,7 @@ if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
 if /i "%secim%"=="H" goto :hosts_kalkan
 if /i "%secim%"=="D" goto :disk_detay
 if /i "%secim%"=="C" goto :tema_degistir
+if /i "%secim%"=="B" goto :baslangic_analiz
 if /i "%secim%"=="A" (
     if "!oto_kapat!"=="0" (set "oto_kapat=1") else (set "oto_kapat=0")
     goto :menu
@@ -363,4 +364,37 @@ echo     bu bir arka kapi (backdoor) veya uygulama olabilir.
 echo.
 echo Ana menuye donmek icin bir tusa basin.
 pause >nul
+goto :menu
+
+
+
+:baslangic_analiz
+cls
+echo ======================================================
+echo           ZENITHSHELL BASLANGIC ANALIZORU
+echo ======================================================
+echo.
+echo [!] Otomatik baslayan uygulamalar listeleniyor...
+echo [!] Gereksiz gorduklerinizi Gorev Yoneticisi'nden (Startup) kapatin.
+echo.
+echo  UYGULAMA ADI          KONUM / KOMUT
+echo  --------------------------------------------------
+
+:: Başlangıçta çalışan programları isim ve komut satırı olarak çeker
+wmic startup get caption,command /format:table
+
+echo  --------------------------------------------------
+echo.
+echo [i] IPUCU: 'Update', 'Helper' veya 'Tray' iceren uygulamalar 
+echo     genellikle acilisi yavaslatan yan servislerdir.
+echo.
+echo [M] Baslangic Ayarlarini Ac (Gorev Yoneticisi)
+echo [0] Ana Menuye Don
+echo.
+set /p "b_secim=Seciminiz: "
+
+if /i "%b_secim%"=="M" (
+    start taskmgr /0 /startup
+    goto :baslangic_analiz
+)
 goto :menu
