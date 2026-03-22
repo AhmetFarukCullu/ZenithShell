@@ -14,7 +14,7 @@ if not defined oto_kapat set "oto_kapat=0"
 if not defined tema_kod set "tema_kod=0b"
 if not defined tema_ad set "tema_ad=Siber Mavi"
 
-set "log_file=%~dp0bakim_gunlugu.txt"
+set "log_file=%LocalAppData%\ZenithShell_log.txt"
 for /f "tokens=*" %%a in ('powershell -command "(Get-PSDrive C).Free"') do set "start_space=%%a"
 
 :: --- DISK SAGLIK SORGUSU ---
@@ -42,12 +42,13 @@ echo  DISK SAGLIGI (S.M.A.R.T): [%smart_durum%]
 echo.
 echo  [1] Hizli Temizlik          [6] Haftalik Bakim Kur
 echo  [2] Derin Temizlik (Yedekli)[7] Haftalik Bakim Iptal
-echo  [3] Interneti Tazele        [8] Acilista Calistir (Kur)
+echo  [3] Interneti Tazele        [H] Hosts Kalkanı (Reklam/Zararlı Engelle)
 echo  [4] Copu Bosalt             [9] Acilista Calistir (Iptal)
 echo  [5] Akilli Analiz ve Bakim  [A] AYAR: Oto-Kapat [%kapat_etiket%]
 echo  [T] Tarayici Temizligi      [C] TEMA: [%tema_ad%]
 echo  [R] RAM Onbellegi Bosalt    [D] Disk Saglik Raporu (Detayli)
-echo  [L] Bakim Gunlugunu Ac      [0] Cikis
+echo  [L] Bakim Gunlugunu Ac      [8] Acilista Calistir (Kur)
+echo  [0] Cikis
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -66,6 +67,7 @@ if "%secim%"=="9" goto :acilis_iptal
 if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
+if /i "%secim%"=="H" goto :hosts_kalkan
 if /i "%secim%"=="D" goto :disk_detay
 if /i "%secim%"=="C" goto :tema_degistir
 if /i "%secim%"=="A" (
@@ -253,4 +255,39 @@ echo ------------------------------------------------------
 echo.
 echo Ana menuye donmek icin bir tusa basin.
 pause >nul
+goto :menu
+
+
+:hosts_kalkan
+cls
+echo ======================================================
+echo           ZENITHSHELL HOSTS KALKANI (V1.0)
+echo ======================================================
+echo.
+echo [!] Bu islem bilinen reklam ve zararli sunuculari engeller.
+echo [!] Mevcut Hosts dosyaniz yedeklenecek.
+echo.
+set "hosts_path=%SystemRoot%\System32\drivers\etc\hosts"
+
+:: 1. Mevcut dosyayı yedekle (Eğer daha önce yedeklenmediyse)
+if not exist "%hosts_path%.bak" (
+    copy "%hosts_path%" "%hosts_path%.bak" >nul
+    echo [+] Orijinal Hosts dosyasi yedeklendi (.bak)
+)
+
+:: 2. Reklam/Zararlı IP'leri ekle
+echo. >> "%hosts_path%"
+echo # ZenithShell Kalkan Baslangici >> "%hosts_path%"
+echo 0.0.0.0 adservice.google.com >> "%hosts_path%"
+echo 0.0.0.0 doubleclick.net >> "%hosts_path%"
+echo 0.0.0.0 telemetry.microsoft.com >> "%hosts_path%"
+echo # ZenithShell Kalkan Bitisi >> "%hosts_path%"
+
+echo [+] Reklam ve Telemetri sunuculari engellendi.
+echo [+] Internetiniz artik daha temiz.
+echo.
+ipconfig /flushdns >nul
+echo [!] Degisikliklerin aktif olmasi icin DNS temizlendi.
+echo.
+pause
 goto :menu
