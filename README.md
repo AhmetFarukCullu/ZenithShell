@@ -42,4 +42,14 @@ Program içerisinde 6 farklı tema (Matrix, Siber Mavi, Klasik vb.) arasından s
 ## 📄 Lisans
 Bu proje **MIT Lisansı** altında korunmaktadır.
 
+---
+
+## ⚖️ Sorumluluk Reddi (Disclaimer)
+
+Bu araç **"olduğu gibi" (as is)** sunulmaktadır. **ZenithShell**, sistem optimizasyonu ve güvenliği için tasarlanmış olsa da;
+- Yanlış kullanım sonucu oluşabilecek veri kayıplarından,
+- Anti-Ransomware modülünün tetiklediği ağ kesintilerinden,
+- Üçüncü taraf yazılımlarla oluşabilecek uyumsuzluklardan
+**geliştirici hiçbir şekilde sorumlu tutulamaz.** Programı çalıştırmadan önce sistem yedeği almanız önerilir.
+
 **Geliştirici:** [Ahmet Faruk Çullu](https://github.com/AhmetFarukCullu)
