@@ -50,7 +50,7 @@ echo  [R] RAM Onbellegi Bosalt          [D] Disk Saglik Raporu (Detayli)
 echo  [L] Bakim Gunlugunu Ac            [8] Acilista Calistir (Kur)
 echo  [0] Cikis                         [W] Wi-Fi ^& Ağ Analizi (Anlık)
 echo  [P] Acik Port Taramasi (Guvenlik) [B] Baslangic Analizi (Hizlandirma)
-echo  [V] Servis Optimizasyonu (Hiz)
+echo  [V] Servis Optimizasyonu (Hiz)    [U] Tum Uygulamalari Guncelle (Winget)
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -68,6 +68,7 @@ if "%secim%"=="8" goto :acilis_aktif
 if "%secim%"=="9" goto :acilis_iptal
 if /i "%secim%"=="W" goto :wifi_analiz
 if /i "%secim%"=="V" goto :servis_opt
+if /i "%secim%"=="U" goto :winget_update
 if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="P" goto :port_taramasi
@@ -439,3 +440,46 @@ if "%s_secim%"=="0" goto :menu
 echo.
 pause
 goto :servis_opt
+
+
+
+:winget_update
+cls
+echo ======================================================
+echo           ZENITHSHELL AKILLI PAKET YONETICISI
+echo ======================================================
+echo.
+echo [!] Sistemdeki uygulamalar kontrol ediliyor...
+echo.
+
+:: Winget var mı kontrol et
+winget --version >nul 2>&1
+if %errorlevel% neq 0 (
+    echo [X] HATA: Winget bu sistemde yuklu degil.
+    echo     (Windows 10/11 kullaniyorsaniz Microsoft Store'dan
+    echo      'Uygulama Yükleyicisi'ni guncellemelisiniz.)
+    pause
+    goto :menu
+)
+
+:: Güncellenebilir uygulamaları listele
+echo [+] Guncellenebilir uygulamalar listeleniyor:
+winget upgrade
+echo.
+echo ------------------------------------------------------
+echo  [1] TUMUNU GUNCELLE (Sessiz Mod)
+echo  [0] Vazgec ve Ana Menuye Don
+echo ------------------------------------------------------
+echo.
+set /p "u_secim=Seciminiz: "
+
+if "%u_secim%"=="1" (
+    echo.
+    echo [!] Guncellestirmeler baslatiliyor, lutfen bekleyin...
+    winget upgrade --all --include-unknown
+    echo.
+    echo [+] Islem tamamlandi!
+    pause
+)
+
+goto :menu
