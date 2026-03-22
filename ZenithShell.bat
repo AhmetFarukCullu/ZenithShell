@@ -40,15 +40,16 @@ echo ======================================================
 echo.
 echo  DISK SAGLIGI (S.M.A.R.T): [%smart_durum%]
 echo.
-echo  [1] Hizli Temizlik          [6] Haftalik Bakim Kur
-echo  [2] Derin Temizlik (Yedekli)[7] Haftalik Bakim Iptal
-echo  [3] Interneti Tazele        [H] Hosts Kalkanı (Reklam/Zararlı Engelle)
-echo  [4] Copu Bosalt             [9] Acilista Calistir (Iptal)
-echo  [5] Akilli Analiz ve Bakim  [A] AYAR: Oto-Kapat [%kapat_etiket%]
-echo  [T] Tarayici Temizligi      [C] TEMA: [%tema_ad%]
-echo  [R] RAM Onbellegi Bosalt    [D] Disk Saglik Raporu (Detayli)
-echo  [L] Bakim Gunlugunu Ac      [8] Acilista Calistir (Kur)
-echo  [0] Cikis                   [W] Wi-Fi ^& Ağ Analizi (Anlık)
+echo  [1] Hizli Temizlik                [6] Haftalik Bakim Kur
+echo  [2] Derin Temizlik (Yedekli)      [7] Haftalik Bakim Iptal
+echo  [3] Interneti Tazele              [H] Hosts Kalkanı (Reklam/Zararlı Engelle)
+echo  [4] Copu Bosalt                   [9] Acilista Calistir (Iptal)
+echo  [5] Akilli Analiz ve Bakim        [A] AYAR: Oto-Kapat [%kapat_etiket%]
+echo  [T] Tarayici Temizligi            [C] TEMA: [%tema_ad%]
+echo  [R] RAM Onbellegi Bosalt          [D] Disk Saglik Raporu (Detayli)
+echo  [L] Bakim Gunlugunu Ac            [8] Acilista Calistir (Kur)
+echo  [0] Cikis                         [W] Wi-Fi ^& Ağ Analizi (Anlık)
+echo  [P] Acik Port Taramasi (Guvenlik)
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -67,6 +68,7 @@ if "%secim%"=="9" goto :acilis_iptal
 if /i "%secim%"=="W" goto :wifi_analiz
 if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
+if /i "%secim%"=="P" goto :port_taramasi
 if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
 if /i "%secim%"=="H" goto :hosts_kalkan
 if /i "%secim%"=="D" goto :disk_detay
@@ -332,6 +334,32 @@ if "%ping_res%"=="Olculemedi" (
 
 echo  Ortalama Gecikme : %ping_res%
 echo  --------------------------------------------------
+echo.
+echo Ana menuye donmek icin bir tusa basin.
+pause >nul
+goto :menu
+
+
+
+:port_taramasi
+cls
+echo ======================================================
+echo           ZENITHSHELL ACIK PORT DENETLEYICI
+echo ======================================================
+echo.
+echo [!] Aktif baglantilar ve acik kapilar taraniyor...
+echo [!] LISTENING: Disaridan baglanti bekleyen acik kapilar.
+echo.
+echo  PROTOKOL   YEREL ADRES          DURUM
+echo  --------------------------------------------------
+
+:: Sadece 'LISTENING' (Dinlemede) olan portları filtrele
+netstat -ano | findstr /i "LISTENING"
+
+echo  --------------------------------------------------
+echo.
+echo [i] Eger tanimadiginiz bir port 'LISTENING' durumundaysa,
+echo     bu bir arka kapi (backdoor) veya uygulama olabilir.
 echo.
 echo Ana menuye donmek icin bir tusa basin.
 pause >nul
