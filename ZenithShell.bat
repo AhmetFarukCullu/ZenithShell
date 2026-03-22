@@ -50,6 +50,7 @@ echo  [R] RAM Onbellegi Bosalt          [D] Disk Saglik Raporu (Detayli)
 echo  [L] Bakim Gunlugunu Ac            [8] Acilista Calistir (Kur)
 echo  [0] Cikis                         [W] Wi-Fi ^& Ağ Analizi (Anlık)
 echo  [P] Acik Port Taramasi (Guvenlik) [B] Baslangic Analizi (Hizlandirma)
+echo  [V] Servis Optimizasyonu (Hiz)
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -66,6 +67,7 @@ if "%secim%"=="7" goto :zamanla_sil
 if "%secim%"=="8" goto :acilis_aktif
 if "%secim%"=="9" goto :acilis_iptal
 if /i "%secim%"=="W" goto :wifi_analiz
+if /i "%secim%"=="V" goto :servis_opt
 if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="P" goto :port_taramasi
@@ -398,3 +400,42 @@ if /i "%b_secim%"=="M" (
     goto :baslangic_analiz
 )
 goto :menu
+
+
+
+:servis_opt
+cls
+echo ======================================================
+echo           ZENITHSHELL SERVIS OPTIMIZASYONU
+echo ======================================================
+echo.
+echo [!] Kritik servisler devre disi birakilmaz, sadece 
+echo     ev kullanicilari icin gereksiz olanlar hedeflenir.
+echo.
+echo  [1] Yazdirma Kuyrugu (Yaziciniz yoksa kapatin)
+echo  [2] Uzak Kayit Defteri (Guvenlik icin kapatin)
+echo  [3] Dokunmatik Klavye ve Panel (Tablet degilse kapatin)
+echo  [4] Faks Servisi (Kullanilmiyorsa kapatin)
+echo  [R] HEPSINI TAVSIYE EDILEN YAP (Hizli Ayar)
+echo  [0] Vazgec ve Ana Menuye Don
+echo.
+set /p "s_secim=Seciminiz: "
+
+if "%s_secim%"=="1" sc config "Spooler" start= demand & echo [+] Yazdirma Kuyrugu 'Elle' yapildi.
+if "%s_secim%"=="2" sc config "RemoteRegistry" start= disabled & echo [+] Uzak Kayit Defteri Kapatildi.
+if "%s_secim%"=="3" sc config "TabletInputService" start= demand & echo [+] Dokunmatik Panel 'Elle' yapildi.
+if "%s_secim%"=="4" sc config "Fax" start= disabled & echo [+] Faks Servisi Kapatildi.
+
+if /i "%s_secim%"=="R" (
+    echo [!] Hizli optimizasyon yapiliyor...
+    sc config "Spooler" start= demand >nul 2>&1
+    sc config "RemoteRegistry" start= disabled >nul 2>&1
+    sc config "TabletInputService" start= demand >nul 2>&1
+    sc config "Fax" start= disabled >nul 2>&1
+    echo [+] Tavsiye edilen ayarlar uygulandi!
+)
+
+if "%s_secim%"=="0" goto :menu
+echo.
+pause
+goto :servis_opt
