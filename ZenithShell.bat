@@ -305,19 +305,28 @@ echo.
 echo [!] Ag bilgileri toplaniyor...
 echo.
 
-:: Wi-Fi Sinyal Gücü ve Detayları Yakala
-for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces ^| findstr "SSID" ^| findstr /v "BSSID"') do set "wifi_name=%%a"
-for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces ^| findstr "Sinyal"') do set "wifi_signal=%%a"
+:: Dil bağımsız çekim (İndis numarasına göre veri alma)
+for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces ^| findstr /r "SSID" ^| findstr /v "BSSID"') do set "wifi_name=%%a"
+for /f "tokens=2 delims=:" %%a in ('netsh wlan show interfaces ^| findstr /r "[0-9]%%"') do set "wifi_signal=%%a"
 
-echo  Bagli Ag    : %wifi_name%
-echo  Sinyal Gucu : %wifi_signal%
+:: Eğer boş kaldıysa (Masaüstü/Ethernet kontrolü)
+if "%wifi_name%"=="" set "wifi_name= Bagli degil veya Ethernet"
+if "%wifi_signal%"=="" set "wifi_signal= Yok"
+
+echo  Bagli Ag    :%wifi_name%
+echo  Sinyal Gucu :%wifi_signal%
 echo  --------------------------------------------------
-echo [!] Ping testi baslatiliyor (google.com)...
+echo [!] Ping testi baslatiliyor (8.8.8.8)...
 echo.
 
-:: Ping Testi (Gecikme Süresi)
-ping -n 4 google.com | findstr "Ortalama"
-if %errorlevel% neq 0 echo [!] Internet baglantisi kurulamadi!
+:: Ping testini dile takılmadan, sadece sayıları alacak şekilde yapıyoruz
+for /f "tokens=4 delims==" %%i in ('ping -n 4 8.8.8.8 ^| findstr /i "ms"') do set "ping_res=%%i"
+
+if "%ping_res%"=="" (
+    echo [!] Internet baglantisi YOK!
+) else (
+    echo  Gecikme (Ping): %ping_res%
+)
 
 echo  --------------------------------------------------
 echo.
