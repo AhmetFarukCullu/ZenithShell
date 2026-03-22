@@ -131,7 +131,7 @@ echo  [P] Acik Port Taramasi (Guvenlik)    [B] Baslangic Analizi (Hizlandirma)
 echo  [V] Servis Optimizasyonu (Hiz)       [U] Tum Uygulamalari Guncelle (Winget)
 echo  [K] Elite Paket Kur (Format Sonrasi) [I] Donanim Envanter Raporu (Cikti Al)
 echo  [M] Mavi Ekran (BSOD) Analizi        [O] Windows Update Onarici
-echo  [G] Pil Sagligi ^& Guc Raporu
+echo  [G] Pil Sagligi ^& Guc Raporu        [S] Anti-Ransomware Shield (Zirh)
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -151,6 +151,7 @@ if /i "%secim%"=="W" goto :wifi_analiz
 if /i "%secim%"=="V" goto :servis_opt
 if /i "%secim%"=="U" goto :winget_update
 if /i "%secim%"=="T" goto :tarayici_temizle
+if /i "%secim%"=="S" goto :shield_menu
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="P" goto :port_taramasi
 if /i "%secim%"=="O" goto :update_onar
@@ -797,3 +798,65 @@ echo.
 set /p "p_secim=Seciminiz: "
 if "%p_secim%"=="1" start "" "%temp%\battery_report.html"
 goto :menu
+
+
+
+:shield_menu
+cls
+echo ======================================================
+echo           ZENITHSHELL ANTI-RANSOMWARE SHIELD
+echo ======================================================
+echo.
+echo [1] Korumayi Baslat (HoneyPot Dosyalari Olustur)
+echo [2] Sistemi Tara (Süpheli Aktivite Kontrolu)
+echo [0] Ana Menuye Don
+echo.
+set /p "s_sec=Seciminiz: "
+
+if "%s_sec%"=="1" goto :shield_setup
+if "%s_sec%"=="2" goto :shield_scan
+goto :menu
+
+:shield_setup
+echo [!] Kritik dizinlere koruma yemleri yerlestiriliyor...
+:: Belgeler ve Masaüstüne gizli .zshield uzantılı yem dosyalar bırakır
+echo ZenithShell_Security_File > "%USERPROFILE%\Documents\vault_key.zshield"
+echo ZenithShell_Security_File > "%USERPROFILE%\Desktop\system_lock.zshield"
+attrib +h "%USERPROFILE%\Documents\vault_key.zshield"
+attrib +h "%USERPROFILE%\Desktop\system_lock.zshield"
+echo [+] Koruma noktalari olusturuldu.
+pause & goto :shield_menu
+
+:shield_scan
+cls
+echo [!] Zirh aktif. Dosya bütünlüğü kontrol ediliyor...
+set "alert=0"
+
+:: Yem dosyaların içeriği değişmiş mi veya silinmiş mi kontrol et
+if not exist "%USERPROFILE%\Documents\vault_key.zshield" set "alert=1"
+if not exist "%USERPROFILE%\Desktop\system_lock.zshield" set "alert=1"
+
+:: PowerShell ile dosya içeriğinde değişiklik var mı (şifreleme belirtisi) bak
+powershell -Command "$c = Get-Content '%USERPROFILE%\Documents\vault_key.zshield' -ErrorAction SilentlyContinue; if($c -and $c -ne 'ZenithShell_Security_File'){ exit 100 } else { exit 200 }"
+if %errorlevel%==100 set "alert=1"
+
+if "%alert%"=="1" (
+    color 4f
+    echo.
+    echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    echo [!!!] ACIL DURUM: SUPHELI DOSYA DEGISIKLIGI SAPTANDI!
+    echo [!!!] RANSOMWARE SALDIRISI OLABILIR!
+    echo !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    echo.
+    echo [!] Ag baglantisi kesiliyor...
+    netsh interface set interface name="Wi-Fi" admin=disabled >nul 2>&1
+    netsh interface set interface name="Ethernet" admin=disabled >nul 2>&1
+    call :seslendir "Acil durum. Fidye yazilimi saptandi. Sistem korumaya alindi."
+    echo [!] Sistem donduruldu. Lutfen gorev yoneticisinden bilinmeyen
+    echo     islemleri sonlandirin veya bilgisayari kapatin.
+    pause
+) else (
+    echo [+] Sistem temiz. Herhangi bir sifreleme hareketi saptanmadi.
+    timeout /t 2 >nul
+)
+goto :shield_menu
