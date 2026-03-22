@@ -36,6 +36,30 @@ if defined remote_ver (
 :: --- GUNCELLEME MOTORU BITTI ---
 
 :init
+
+:disclaimer
+cls
+echo ======================================================
+echo           ZENITHSHELL GUVENLIK VE KULLANIM
+echo ======================================================
+echo.
+echo  [!] DIKKAT: Bu program sistem ayarlarina ve dosyalara
+echo      dogrudan mudahale eder. Anti-Ransomware modulu 
+echo      supheli durumda internetinizi kesebilir.
+echo.
+echo  [!] SORUMLULUK REDDI: Bu yazilimin kullanimindan 
+echo      dogabilecek veri kaybi, donanim hatasi veya 
+echo      ag kesintilerinden geliştirici sorumlu tutulamaz.
+echo      Tum risk kullaniciya aittir.
+echo.
+set /p "onay=Sartlari kabul ediyor musunuz? (E/H): "
+if /i "%onay%" NEQ "E" (
+    echo.
+    echo [!] Onay verilmedigi icin program kapatiliyor.
+    timeout /t 3 >nul
+    exit
+)
+
 :: Varsayılan Ayarlar
 if not defined oto_kapat set "oto_kapat=0"
 if not defined tema_kod set "tema_kod=0b"
@@ -120,18 +144,19 @@ echo  DISK SAGLIGI (S.M.A.R.T): [%smart_durum%]
 echo.
 echo  [1] Hizli Temizlik                   [6] Haftalik Bakim Kur
 echo  [2] Derin Temizlik (Yedekli)         [7] Haftalik Bakim Iptal
-echo  [3] Interneti Tazele                 [H] Hosts Kalkanı (Reklam/Zararlı Engelle)
+echo  [3] Interneti Tazele                 [H] Hosts Kalkani (Reklam/Zararli Engelle)
 echo  [4] Copu Bosalt                      [9] Acilista Calistir (Iptal)
 echo  [5] Akilli Analiz ve Bakim           [A] AYAR: Oto-Kapat [%kapat_etiket%]
 echo  [T] Tarayici Temizligi               [C] TEMA: [%tema_ad%]
 echo  [R] RAM Onbellegi Bosalt             [D] Disk Saglik Raporu (Detayli)
 echo  [L] Bakim Gunlugunu Ac               [8] Acilista Calistir (Kur)
-echo  [0] Cikis                            [W] Wi-Fi ^& Ağ Analizi (Anlık)
+echo  [0] Cikis                            [W] Wi-Fi ^& Ağ Analizi (Anlik)
 echo  [P] Acik Port Taramasi (Guvenlik)    [B] Baslangic Analizi (Hizlandirma)
 echo  [V] Servis Optimizasyonu (Hiz)       [U] Tum Uygulamalari Guncelle (Winget)
 echo  [K] Elite Paket Kur (Format Sonrasi) [I] Donanim Envanter Raporu (Cikti Al)
 echo  [M] Mavi Ekran (BSOD) Analizi        [O] Windows Update Onarici
-echo  [G] Pil Sagligi ^& Guc Raporu        [S] Anti-Ransomware Shield (Zirh)
+echo  [G] Pil Sagligi ^& Guc Raporu         [S] Anti-Ransomware Shield (Zirh)
+echo  [Y] Yardim
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -148,6 +173,7 @@ if "%secim%"=="7" goto :zamanla_sil
 if "%secim%"=="8" goto :acilis_aktif
 if "%secim%"=="9" goto :acilis_iptal
 if /i "%secim%"=="W" goto :wifi_analiz
+if /i "%secim%"=="Y" goto :hakkinda
 if /i "%secim%"=="V" goto :servis_opt
 if /i "%secim%"=="U" goto :winget_update
 if /i "%secim%"=="T" goto :tarayici_temizle
@@ -860,3 +886,21 @@ if "%alert%"=="1" (
     timeout /t 2 >nul
 )
 goto :shield_menu
+
+
+
+:hakkinda
+cls
+echo ======================================================
+echo             ZENITHSHELL KULLANIM REHBERI
+echo ======================================================
+echo.
+echo 1. Anti-Ransomware: Yem dosyalar degistirilirse interneti 
+echo    guvenlik icin kapatir. 'netsh' komutuyla geri acilabilir.
+echo 2. Temizlik: Sadece Temp ve Prefetch gibi onbellekleri siler,
+echo    kisisel dosyalariniza dokunmaz.
+echo 3. Update Onarici: Servisleri durdurup baslatir, bu sirada
+echo    Windows Update ekranini kapatmaniz onerilir.
+echo.
+pause
+goto :menu
