@@ -130,6 +130,7 @@ echo  [0] Cikis                            [W] Wi-Fi ^& Ağ Analizi (Anlık)
 echo  [P] Acik Port Taramasi (Guvenlik)    [B] Baslangic Analizi (Hizlandirma)
 echo  [V] Servis Optimizasyonu (Hiz)       [U] Tum Uygulamalari Guncelle (Winget)
 echo  [K] Elite Paket Kur (Format Sonrasi) [I] Donanim Envanter Raporu (Cikti Al)
+echo  [M] Mavi Ekran (BSOD) Analizi
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -151,6 +152,7 @@ if /i "%secim%"=="U" goto :winget_update
 if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="P" goto :port_taramasi
+if /i "%secim%"=="M" goto :bsod_analiz
 if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
 if /i "%secim%"=="K" goto :toplu_kurulum
 if /i "%secim%"=="I" goto :envanter_raporu
@@ -662,4 +664,46 @@ echo [!] Rapor Masaustunde: Sistem_Ozeti.txt
 echo.
 call :seslendir "Envanter raporu masaustune kaydedildi."
 pause
+goto :menu
+
+
+
+:bsod_analiz
+cls
+echo ======================================================
+echo           ZENITHSHELL MAVI EKRAN (BSOD) ANALIZI
+echo ======================================================
+echo.
+echo [!] Minidump dosyalari taraniyor...
+echo.
+
+:: Minidump klasörü var mı kontrol et
+if not exist "C:\Windows\Minidump" (
+    echo [X] HATA: Minidump klasoru bulunamadi. 
+    echo [!] Sisteminizde daha once Mavi Ekran kaydi olusmamis olabilir.
+    pause & goto :menu
+)
+
+:: En son dump dosyasını bul ve PowerShell ile analiz et
+powershell -Command ^
+    "$dumps = Get-ChildItem 'C:\Windows\Minidump\*.dmp' | Sort-Object LastWriteTime -Descending; ^
+    if ($dumps.Count -eq 0) { Write-Host '[-] Hicbir cokme dosyasi bulunamadi.'; return }; ^
+    $lastDump = $dumps[0]; ^
+    Write-Host '[+] En Son Cokme Tarihi: ' $lastDump.LastWriteTime; ^
+    Write-Host '[+] Dosya Adi: ' $lastDump.Name; ^
+    Write-Host '--------------------------------------------'; ^
+    Write-Host '[!] Analiz Ediliyor (Hata Kodu Sorgusu)...'; ^
+    $errCode = (Get-CimInstance -ClassName Win32_Thread | Where-Object { $_.ThreadState -eq 5 } | Select-Object -First 1).WaitReason; ^
+    if (!$errCode) { Write-Host '[i] Spesifik hata kodu yakalanamadi. Genellikle Donanim veya Surucu (Driver) kaynaklidir.' } ^
+    else { Write-Host '[!] Muhtemel Neden Kodu: ' $errCode }; ^
+    Write-Host '--------------------------------------------'; ^
+    Write-Host '[TAVSIYE]: Mavi ekran genellikle ekran karti surucusu veya RAM arizasindan kaynaklanir.'; ^
+    Write-Host 'Daha detayli analiz icin BlueScreenView aracini kullanmaniz onerilir.'"
+
+echo.
+echo [1] Dump Klasorunu Ac (Manuel Inceleme)
+echo [0] Ana Menuye Don
+echo.
+set /p "m_secim=Seciminiz: "
+if "%m_secim%"=="1" start explorer.exe "C:\Windows\Minidump"
 goto :menu
