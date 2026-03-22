@@ -100,7 +100,7 @@ echo  [L] Bakim Gunlugunu Ac               [8] Acilista Calistir (Kur)
 echo  [0] Cikis                            [W] Wi-Fi ^& Ağ Analizi (Anlık)
 echo  [P] Acik Port Taramasi (Guvenlik)    [B] Baslangic Analizi (Hizlandirma)
 echo  [V] Servis Optimizasyonu (Hiz)       [U] Tum Uygulamalari Guncelle (Winget)
-echo  [K] Elite Paket Kur (Format Sonrasi) 
+echo  [K] Elite Paket Kur (Format Sonrasi) [I] Donanim Envanter Raporu (Cikti Al)
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -124,6 +124,7 @@ if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="P" goto :port_taramasi
 if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
 if /i "%secim%"=="K" goto :toplu_kurulum
+if /i "%secim%"=="I" goto :envanter_raporu
 if /i "%secim%"=="H" goto :hosts_kalkan
 if /i "%secim%"=="D" goto :disk_detay
 if /i "%secim%"=="C" goto :tema_degistir
@@ -601,3 +602,35 @@ goto :menu
 :: Kullanım: call :seslendir "Mesajınız buraya"
 powershell -Command "Add-Type -AssemblyName System.Speech; (New-Object System.Speech.Synthesis.SpeechSynthesizer).Speak('%~1');"
 exit /b
+
+
+
+:envanter_raporu
+cls
+echo ======================================================
+echo           ZENITHSHELL ENVANTER RAPORLAMA (V26.9)
+echo ======================================================
+echo.
+echo [!] Sistem verileri toplaniyor, lutfen bekleyin...
+echo [!] Bu islem sirasinda ekran bir anlik donabilir.
+echo.
+
+set "rf=%USERPROFILE%\Desktop\Sistem_Ozeti.txt"
+
+:: Tek satır, tırnak korumalı PowerShell komutu
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$r = @(); $r += '### ZENITHSHELL SISTEM RAPORU ###'; $r += 'Tarih: ' + (Get-Date); $r += '--------------------------'; $r += '[ISLEMCI]'; $r += (Get-CimInstance Win32_Processor).Name; $r += '[BELLEK]'; $r += (Get-CimInstance Win32_PhysicalMemory | Select-Object @{L='GB';E={[math]::round($_.Capacity/1GB,2)}}, Speed | Out-String); $r += '[DISK]'; $r += (Get-CimInstance Win32_DiskDrive | Select-Object Model, Status | Out-String); $r += '--------------------------'; $r | Out-File -FilePath '%rf%' -Encoding utf8"
+
+if %errorlevel% neq 0 (
+    echo [X] HATA: PowerShell komutu calistirilamadi!
+    echo [!] Yetki sorunu veya PowerShell kisitlamasi olabilir.
+    pause
+    goto :menu
+)
+
+echo.
+echo [+] ISLEM TAMAMLANDI!
+echo [!] Rapor Masaustunde: Sistem_Ozeti.txt
+echo.
+call :seslendir "Envanter raporu masaustune kaydedildi."
+pause
+goto :menu
