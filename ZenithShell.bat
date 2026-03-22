@@ -17,24 +17,14 @@ if not defined tema_ad set "tema_ad=Siber Mavi"
 set "log_file=%~dp0bakim_gunlugu.txt"
 for /f "tokens=*" %%a in ('powershell -command "(Get-PSDrive C).Free"') do set "start_space=%%a"
 
+:: --- DISK SAGLIK SORGUSU ---
+for /f "tokens=2 delims==" %%a in ('wmic diskdrive get status /value ^| find "Status"') do set "smart_durum=%%a"
+if "%smart_durum%"=="" set "smart_durum=BILINMIYOR"
+
 :menu
 cls
-title ZenithShell v14.0 - Kararli Surum
+title Windows Bakim Paneli v13.0 (Hibrit Analiz)
 color %tema_kod%
-
-echo ======================================================
-echo           ZENITHSHELL SISTEM KOMUTA MERKEZI
-echo ======================================================
-echo.
-echo  Sistem Durumu: [AKTIF]
-echo.
-echo  [1] Hizli Temizlik          [6] Haftalik Bakim Kur
-echo  [2] Derin Optimizasyon      [7] Tema Degistir
-echo  [3] Disk Analizi            [8] Hakkinda
-echo  [4] Internet Hizlandir       [9] Cikis
-echo.
-echo ======================================================
-set /p secim="Islem Seciniz: "
 
 :: --- DURUM KONTROLLERİ ---
 set "haftalik_durum=DEVRE DISI"
@@ -45,8 +35,10 @@ set "kapat_etiket=KAPALI"
 if "!oto_kapat!"=="1" set "kapat_etiket=ACIK"
 
 echo ======================================================
-echo           WINDOWS SISTEM VE HIBRIT ANALIZ MERKEZI
+echo         ZENITHSHELL SISTEM VE ANALIZ MERKEZI
 echo ======================================================
+echo.
+echo  DISK SAGLIGI (S.M.A.R.T): [%smart_durum%]
 echo.
 echo  [1] Hizli Temizlik          [6] Haftalik Bakim Kur
 echo  [2] Derin Temizlik (Yedekli)[7] Haftalik Bakim Iptal
@@ -54,8 +46,8 @@ echo  [3] Interneti Tazele        [8] Acilista Calistir (Kur)
 echo  [4] Copu Bosalt             [9] Acilista Calistir (Iptal)
 echo  [5] Akilli Analiz ve Bakim  [A] AYAR: Oto-Kapat [%kapat_etiket%]
 echo  [T] Tarayici Temizligi      [C] TEMA: [%tema_ad%]
-echo  [R] RAM Onbellegi Bosalt    [L] Bakim Gunlugunu Ac
-echo                              [0] Cikis
+echo  [R] RAM Onbellegi Bosalt    [D] Disk Saglik Raporu (Detayli)
+echo  [L] Bakim Gunlugunu Ac      [0] Cikis
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -74,6 +66,7 @@ if "%secim%"=="9" goto :acilis_iptal
 if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
+if /i "%secim%"=="D" goto :disk_detay
 if /i "%secim%"=="C" goto :tema_degistir
 if /i "%secim%"=="A" (
     if "!oto_kapat!"=="0" (set "oto_kapat=1") else (set "oto_kapat=0")
@@ -239,3 +232,25 @@ pause & goto :menu
 :zamanla_sil
 schtasks /delete /tn "SistemBakim_Haftalik" /f >nul 2>&1
 pause & goto :menu
+
+
+:disk_detay
+cls
+echo ======================================================
+echo             DETAYLI DISK SAGLIK RAPORU
+echo ======================================================
+echo.
+echo [!] Disk bilgileri ve S.M.A.R.T durumu sorgulaniyor...
+echo.
+:: Windows'un kendi aracini kullanarak Model, Durum ve Boyut bilgisini cekeriz.
+wmic diskdrive get model,status,size /format:list
+echo.
+echo ------------------------------------------------------
+echo  BILGI NOTU:
+echo  [OK]       : Disk saglikli, sorun yok.
+echo  [PredFail] : DIKKAT! Disk fiziksel hata verdi, verilerini yedekle!
+echo ------------------------------------------------------
+echo.
+echo Ana menuye donmek icin bir tusa basin.
+pause >nul
+goto :menu
