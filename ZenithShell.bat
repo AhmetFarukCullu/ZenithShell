@@ -130,7 +130,7 @@ echo  [0] Cikis                            [W] Wi-Fi ^& Ağ Analizi (Anlık)
 echo  [P] Acik Port Taramasi (Guvenlik)    [B] Baslangic Analizi (Hizlandirma)
 echo  [V] Servis Optimizasyonu (Hiz)       [U] Tum Uygulamalari Guncelle (Winget)
 echo  [K] Elite Paket Kur (Format Sonrasi) [I] Donanim Envanter Raporu (Cikti Al)
-echo  [M] Mavi Ekran (BSOD) Analizi
+echo  [M] Mavi Ekran (BSOD) Analizi        [O] Windows Update Onarici
 echo.
 echo  --- SISTEM DURUMU ---
 echo  Haftalik: [%haftalik_durum%]  Acilis: [%acilis_durum%]
@@ -152,6 +152,7 @@ if /i "%secim%"=="U" goto :winget_update
 if /i "%secim%"=="T" goto :tarayici_temizle
 if /i "%secim%"=="R" goto :ram_temizle
 if /i "%secim%"=="P" goto :port_taramasi
+if /i "%secim%"=="O" goto :update_onar
 if /i "%secim%"=="M" goto :bsod_analiz
 if /i "%secim%"=="L" start notepad.exe "%log_file%" & goto :menu
 if /i "%secim%"=="K" goto :toplu_kurulum
@@ -706,4 +707,54 @@ echo [0] Ana Menuye Don
 echo.
 set /p "m_secim=Seciminiz: "
 if "%m_secim%"=="1" start explorer.exe "C:\Windows\Minidump"
+goto :menu
+
+
+
+:update_onar
+cls
+echo ======================================================
+echo           ZENITHSHELL WINDOWS UPDATE ONARICI
+echo ======================================================
+echo.
+echo [!] Kritik servisler durduruluyor...
+echo [!] Bu islem birkac dakika surebilir, lutfen beklemeyin.
+echo.
+
+:: 1. Servisleri Durdur
+net stop wuauserv >nul 2>&1
+net stop cryptSvc >nul 2>&1
+net stop bits >nul 2>&1
+net stop msiserver >nul 2>&1
+
+echo [+] Güncelleme onbellegi temizleniyor...
+:: 2. Eski Güncelleme Dosyalarını Yeniden Adlandır (Yedekle/Sil)
+if exist "%SystemRoot%\SoftwareDistribution" (
+    ren "%SystemRoot%\SoftwareDistribution" SoftwareDistribution.old >nul 2>&1
+)
+if exist "%SystemRoot%\System32\catroot2" (
+    ren "%SystemRoot%\System32\catroot2" catroot2.old >nul 2>&1
+)
+
+echo [+] Kayit defteri ve ağ ayarları sıfırlanıyor...
+:: 3. Winsock ve Proxy Sıfırlama
+netsh winsock reset >nul 2>&1
+netsh int ip reset >nul 2>&1
+
+echo [+] Servisler yeniden baslatiliyor...
+:: 4. Servisleri Tekrar Başlat
+net start wuauserv >nul 2>&1
+net start cryptSvc >nul 2>&1
+net start bits >nul 2>&1
+net start msiserver >nul 2>&1
+
+echo.
+echo ======================================================
+echo  [OK] WINDOWS UPDATE BASARIYLA SIFIRLANDI!
+echo  [!] Lutfen bilgisayarinizi yeniden baslatin ve
+echo      Ayarlar > Windows Update kısmından tekrar deneyin.
+echo ======================================================
+echo.
+call :seslendir "Windows guncelleme servisleri onarildi. Yeniden baslatma onerilir."
+pause
 goto :menu
