@@ -9,6 +9,32 @@ if %errorLevel% neq 0 (
     exit /b
 )
 
+:: --- GUNCELLEME MOTORU (V27.0) ---
+set "current_ver=27.0"
+set "ver_url=https://raw.githubusercontent.com/AhmetFarukCullu/ZenithShell/main/version.txt"
+
+echo [!] Guncellemeler kontrol ediliyor...
+:: PowerShell ile sessizce sürümü çek
+for /f "tokens=*" %%v in ('powershell -command "(New-Object Net.WebClient).DownloadString('%ver_url%').Trim()" 2^>nul') do set "remote_ver=%%v"
+
+if defined remote_ver (
+    if "!remote_ver!" NEQ "!current_ver!" (
+        echo.
+        echo ======================================================
+        echo  [!] YENI SURUM BULUNDU: V!remote_ver!
+        echo  [!] Su anki Surumunuz: V!current_ver!
+        echo ======================================================
+        echo  Yeni ozellikler ve kritik yamalar mevcut.
+        set /p "guncelle_onay=Simdi indirilsin mi? (E/H): "
+        if /i "!guncelle_onay!"=="E" (
+            start "" "https://github.com/KULLANICI_ADIN/REPO_ADIN"
+            echo [i] Tarayici acildi. Yeni surumu indirip eskisinin uzerine yazin.
+            pause & exit
+        )
+    )
+)
+:: --- GUNCELLEME MOTORU BITTI ---
+
 :init
 :: Varsayılan Ayarlar
 if not defined oto_kapat set "oto_kapat=0"
@@ -31,6 +57,9 @@ set "smart_durum=Kontrol Ediliyor..."
 
 :menu
 cls
+echo ======================================================
+echo           ZENITHSHELL DASHBOARD [V!current_ver!]
+echo ======================================================
 title ZenithShell Bakim Paneli v13.0 (Hibrit Analiz)
 color %tema_kod%
 
@@ -74,7 +103,7 @@ if "!oto_kapat!"=="1" set "kapat_etiket=ACIK"
 
 :: --- GÖRSEL ÇIKTI ---
 echo ======================================================
-echo           ZENITHSHELL DASHBOARD [V25.3]
+echo           ZENITHSHELL DASHBOARD [V!current_ver!]
 echo ======================================================
 echo  BELLEK KULLANIMI : [!ram_bar!] !used_mem_perc!%%
 echo  DISK BOS ALAN    : [ !disk_bos! GB ]
