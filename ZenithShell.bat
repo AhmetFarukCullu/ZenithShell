@@ -37,6 +37,22 @@ if defined remote_ver (
 
 :init
 
+:show_logo
+cls
+echo.
+echo  ________  ______  _   _  _____  _____  _   _  _____  _   _  _____  _      _     
+echo ^|___  /  ^|^|  ____^|^| \ ^| ^|^|  _  ^|^|_   _^|^| ^| ^| ^|^|  ___^|^| ^| ^| ^|^|  ___^|^| ^|    ^| ^|    
+echo    / /   ^|^| ^|__   ^|^|  \^| ^|^| ^| ^| ^|  ^| ^|  ^| ^|_^| ^|^| ^|__  ^|^| ^|_^| ^|^| ^|__  ^|^| ^|    ^| ^|    
+echo   / /    ^|^|  __^|  ^|^| . ` ^|^| ^| ^| ^|  ^| ^|  ^|  _  ^|^|  __^| ^|^|  _  ^|^|  __^| ^|^| ^|    ^| ^|    
+echo ./ /___  ^|^| ^|____ ^|^| ^|\  ^|^| \_/ /  ^| ^|  ^| ^| ^| ^|^| ^|____ ^|^| ^| ^| ^|^| ^|____ ^|^| ^|____^| ^|____ 
+echo \_____/  ^|\______^|^|\_^| \_^|\___/   \_/  \_^| ^|_^|\____/ \_^| ^|_^|\____/ \_____/\_____/
+echo.                                                                           
+echo           [ > ] ZENITHSHELL PROFESSIONAL SYSTEM TOOL [ < ]
+echo                  [ + ] STABLE RELEASE V32.3 [ + ]
+echo.
+timeout /t 3 >nul
+exit /b
+
 :disclaimer
 cls
 echo ======================================================
@@ -59,6 +75,12 @@ if /i "%onay%" NEQ "E" (
     timeout /t 3 >nul
     exit
 )
+
+:: Kullanıcı onay verdikten sonra logoyu göster
+call :show_logo
+
+:: Ana Menüye Geç
+goto :menu
 
 :: Varsayılan Ayarlar
 if not defined oto_kapat set "oto_kapat=0"
