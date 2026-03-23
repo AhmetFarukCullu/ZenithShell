@@ -36,19 +36,37 @@ if defined remote_ver (
 :: --- GUNCELLEME MOTORU BITTI ---
 
 :init
+:: 1. Önce Sorumluluk Reddi (En tepede çalışmalı)
+goto :disclaimer
+
+:main_start
+:: 2. Onay verildiyse Logoyu Göster
+call :show_logo
+
+:: 3. Varsayılan Ayarları ve Sistem Verilerini Yükle
+if not defined oto_kapat set "oto_kapat=0"
+if not defined tema_kod set "tema_kod=0b"
+if not defined tema_ad set "tema_ad=Siber Mavi"
+
+set "log_file=%LocalAppData%\ZenithShell_log.txt"
+:: PowerShell verisini alırken hata oluşmaması için tırnaklara dikkat
+for /f "tokens=*" %%a in ('powershell -command "[math]::round((Get-PSDrive C).Free / 1GB, 2)"') do set "start_space=%%a"
+
+:: 4. Ana Menüye Git
+goto :menu
+
+:: ==========================================
+:: FONKSİYONLAR (Buradan aşağısı sadece çağrılınca çalışır)
+:: ==========================================
 
 :show_logo
 cls
 echo.
-echo  ________  ______  _   _  _____  _____  _   _  _____  _   _  _____  _      _     
-echo ^|___  /  ^|^|  ____^|^| \ ^| ^|^|  _  ^|^|_   _^|^| ^| ^| ^|^|  ___^|^| ^| ^| ^|^|  ___^|^| ^|    ^| ^|    
-echo    / /   ^|^| ^|__   ^|^|  \^| ^|^| ^| ^| ^|  ^| ^|  ^| ^|_^| ^|^| ^|__  ^|^| ^|_^| ^|^| ^|__  ^|^| ^|    ^| ^|    
-echo   / /    ^|^|  __^|  ^|^| . ` ^|^| ^| ^| ^|  ^| ^|  ^|  _  ^|^|  __^| ^|^|  _  ^|^|  __^| ^|^| ^|    ^| ^|    
-echo ./ /___  ^|^| ^|____ ^|^| ^|\  ^|^| \_/ /  ^| ^|  ^| ^| ^| ^|^| ^|____ ^|^| ^| ^| ^|^| ^|____ ^|^| ^|____^| ^|____ 
-echo \_____/  ^|\______^|^|\_^| \_^|\___/   \_/  \_^| ^|_^|\____/ \_^| ^|_^|\____/ \_____/\_____/
-echo.                                                                           
-echo           [ > ] ZENITHSHELL PROFESSIONAL SYSTEM TOOL [ < ]
-echo                  [ + ] STABLE RELEASE V32.3 [ + ]
+echo        ******************************************
+echo        * ZENITH SHELL SYSTEM           *
+echo        * Professional Maintenance Tool      *
+echo        * Version [V!current_ver!]               *
+echo        ******************************************
 echo.
 timeout /t 3 >nul
 exit /b
@@ -56,7 +74,7 @@ exit /b
 :disclaimer
 cls
 echo ======================================================
-echo           ZENITHSHELL GUVENLIK VE KULLANIM
+echo            ZENITHSHELL GUVENLIK VE KULLANIM
 echo ======================================================
 echo.
 echo  [!] DIKKAT: Bu program sistem ayarlarina ve dosyalara
@@ -65,7 +83,7 @@ echo      supheli durumda internetinizi kesebilir.
 echo.
 echo  [!] SORUMLULUK REDDI: Bu yazilimin kullanimindan 
 echo      dogabilecek veri kaybi, donanim hatasi veya 
-echo      ag kesintilerinden geliştirici sorumlu tutulamaz.
+echo      ag kesintilerinden gelistirici sorumlu tutulamaz.
 echo      Tum risk kullaniciya aittir.
 echo.
 set /p "onay=Sartlari kabul ediyor musunuz? (E/H): "
@@ -75,9 +93,8 @@ if /i "%onay%" NEQ "E" (
     timeout /t 3 >nul
     exit
 )
-
-:: Kullanıcı onay verdikten sonra logoyu göster
-call :show_logo
+:: Onay verildiyse ana başlangıca dön
+goto :main_start
 
 :: Ana Menüye Geç
 goto :menu
