@@ -8,3 +8,10 @@ temp/
 
 # Donanım kütüphanesi kalıntıları (varsa)
 LibreHardwareMonitorLib.dll
+
+# OS dosyaları
+Thumbs.db
+desktop.ini
+
+# IDE ayarları
+.vscode/
