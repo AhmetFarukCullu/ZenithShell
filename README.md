@@ -1,55 +1,26 @@
-# 🚀 ZenithShell v13.0
-> **Windows Sistem Optimizasyonu, Analiz ve Yönetim Suite**
+# 🛡️ ZenithShell Professional (Community Edition)
 
-ZenithShell; temizlik, donanım takibi ve sistem onarımı süreçlerini tek bir çatı altında toplayan, PowerShell ve Batch tabanlı hibrit bir yönetim aracıdır. Kişisel kullanım için hafif, profesyonel kullanım için güçlüdür.
+ZenithShell, Windows sistemler için geliştirilmiş, **1200+ satırlık** hibrit (Batch & PowerShell) bir sistem bakım, temizlik ve güvenlik otomasyonudur.
 
----
+![ZenithShell Dashboard](GELIRSE_BURAYA_EKRAN_GORUNTUSU_LINKI)
 
 ## 🌟 Öne Çıkan Özellikler
-| Özellik | Açıklama |
-| :--- | :--- |
-| **Hibrit Analiz** | Disk doluluğunu hem `%` hem de `GB` bazlı akıllı algılama motoru. |
-| **Güvenlik Freni** | Kritik işlemlerden önce otomatik Sistem Geri Yükleme noktası oluşturma. |
-| **RAM Optimizasyonu** | Standby bellek yükünü anlık boşaltarak sistemi ferahlatma. |
-| **Tarayıcı Bakımı** | Chrome, Edge ve Firefox için derinlemesine önbellek temizliği. |
-| **Geçmiş Takibi** | Yapılan her işlemden kazanılan alanı `bakim_gunlugu.txt` dosyasına kaydetme. |
 
----
+- **🧹 Gelişmiş Temizlik:** Tarayıcı artıkları, Windows Update önbelleği ve sistem çöplerini tek tıkla temizler.
+- **🛡️ Siber Savunma:** Anti-Ransomware Shield (HoneyPot) ve Hosts tabanlı reklam engelleme.
+- **📊 Derin Analiz:** SHA-256 imzalı donanım envanter raporu, Pil sağlığı ve Mavi Ekran (BSOD) analizörü.
+- **⚙️ Sistem Onarımı:** Bozulmuş Windows Update servislerini ve ağ protokollerini (Winsock) sıfırlama.
+- **📦 Paket Yönetimi:** `winget` entegrasyonu ile tek tıkla toplu uygulama kurulumu ve güncelleme.
 
-## 📅 Proje Yol Haritası (V14.0+)
-ZenithShell sürekli gelişen bir ekosistemdir. Gelecek modüller:
-- [ ] 🌡️ **Donanım Sağlık:** CPU/GPU Sıcaklık ve Pil ömrü takibi.
-- [ ] 📦 **Winget Entegrasyonu:** Tek komutla tüm uygulamaları güncelleme.
-- [ ] 🌐 **Ağ Güvenliği:** Port taraması ve DNS optimizasyonu.
-- [ ] 🩺 **Hata Teşhis:** Mavi Ekran (BSOD) dump analizi.
-
----
-
-## 💻 Kurulum ve Kullanım
-ZenithShell "taşınabilir" (portable) olarak tasarlanmıştır. Kurulum gerektirmez.
+## 🛠️ Nasıl Kullanılır?
 
 1. `ZenithShell.bat` dosyasını indirin.
-2. Dosyaya sağ tıklayıp **Yönetici Olarak Çalıştır** seçeneğini seçin.
-3. Menüden yapmak istediğiniz işlemi seçin ve ZenithShell'in işini yapmasını izleyin.
+2. Dosyaya **sağ tıklayın** ve **"Yönetici Olarak Çalıştır"** deyin.
+3. Menüdeki kısayol harflerini veya rakamlarını kullanarak işlemleri başlatın.
+
+## ⚠️ Sorumluluk Reddi (Disclaimer)
+
+Bu araç sistem dosyaları ve servisleri üzerinde işlem yapmaktadır. Kullanım sırasında oluşabilecek beklenmedik durumlardan kullanıcı sorumludur. Önemli işlemlerden önce yedek almanız önerilir.
 
 ---
-
-## 🎨 Tema Desteği
-Program içerisinde 6 farklı tema (Matrix, Siber Mavi, Klasik vb.) arasından seçim yaparak deneyiminizi özelleştirebilirsiniz.
-
----
-
-## 📄 Lisans
-Bu proje **MIT Lisansı** altında korunmaktadır.
-
----
-
-## ⚖️ Sorumluluk Reddi (Disclaimer)
-
-Bu araç **"olduğu gibi" (as is)** sunulmaktadır. **ZenithShell**, sistem optimizasyonu ve güvenliği için tasarlanmış olsa da;
-- Yanlış kullanım sonucu oluşabilecek veri kayıplarından,
-- Anti-Ransomware modülünün tetiklediği ağ kesintilerinden,
-- Üçüncü taraf yazılımlarla oluşabilecek uyumsuzluklardan
-**geliştirici hiçbir şekilde sorumlu tutulamaz.** Programı çalıştırmadan önce sistem yedeği almanız önerilir.
-
-**Geliştirici:** [Ahmet Faruk Çullu](https://github.com/AhmetFarukCullu)
+*Developed with ❤️ by Ahmet Faruk Çullu*
