@@ -2,7 +2,10 @@
 
 ZenithShell, Windows sistemler için geliştirilmiş, **1200+ satırlık** hibrit (Batch & PowerShell) bir sistem bakım, temizlik ve güvenlik otomasyonudur.
 
-![ZenithShell Dashboard](GELIRSE_BURAYA_EKRAN_GORUNTUSU_LINKI)
+![ZenithShell Dashboard]
+
+<img width="971" height="596" alt="ZenithShell Dashboard" src="https://github.com/user-attachments/assets/91b475f2-4110-4545-817e-12bdec30d4ed" />
+
 
 ## 🌟 Öne Çıkan Özellikler
 
